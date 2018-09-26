@@ -1,0 +1,194 @@
+{% extends 'project_basic.html' %}
+{% load staticfiles %}
+{% block mystyle %}
+        <style>
+			#footer {
+				padding: 15px 0;
+				background: #fff;
+				border-top: 1px solid #ddd;
+				text-align: center;
+			}
+
+			#topcontrol {
+				color: #fff;
+				z-index: 99;
+				width: 30px;
+				height: 30px;
+				font-size: 20px;
+				background: #222;
+				position: relative;
+				right: 14px !important;
+				bottom: 11px !important;
+				border-radius: 3px !important;
+			}
+
+			#topcontrol:after {
+				/*top: -2px;*/
+				left: 8.5px;
+				content: "\f106";
+				position: absolute;
+				text-align: center;
+				font-family: FontAwesome;
+			}
+
+			#topcontrol:hover {
+				color: #fff;
+				background: #18ba9b;
+				-webkit-transition: all 0.3s ease-in-out;
+				-moz-transition: all 0.3s ease-in-out;
+				-o-transition: all 0.3s ease-in-out;
+				transition: all 0.3s ease-in-out;
+			}
+
+			.label-type,
+			.label-status,
+			.label-order {
+				background-color: #fff;
+				color: #f60;
+				padding: 5px;
+				border: 1px #f60 solid;
+			}
+            #typeList>li>a {
+                text-decoration: none;
+            }
+
+			#typeList :not(:first-child) {
+				margin-top: 20px;
+			}
+
+			.label-text {
+				margin: 0 10px;
+			}
+
+			.panel {
+				border-radius: 0;
+			}
+
+			h3.break {
+				font-size: 16px;
+				display: block;
+				white-space: nowrap;
+				word-wrap: normal;
+				overflow: hidden;
+				text-overflow: ellipsis;
+			}
+
+			h3.break>a {
+				text-decoration: none;
+			}
+		</style>
+{% endblock %}
+
+
+{% block content1 %}
+{#            筛选框#}
+        <div class="container">
+            <div class="row clearfix">
+                <div class="col-md-12 column">
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+                            <ul id="typeList" style="list-style: none;">
+                                <li>
+                                    分类：<a href="{% url 'projects:project_list' %}?cate=&stat={{ stat }}&sort={{ sort }}&search={{ search }}" class="{% if cate == ''  %}label-type{% else %}label-text{% endif %}">全部</a>
+                                    {% for cat in category_all %}
+                                        <a href="{% url 'projects:project_list' %}?cate={{ cat.id }}&stat={{ stat }}&sort={{ sort }}&search={{ search }}" class="{% if cate == cat.id|stringformat:'i'  %}label-type {% else %}label-text{% endif %}">{{ cat.name }}</a>
+                                    {% endfor %}
+                                </li>
+                                <li>
+                                    状态：<a href="{% url 'projects:project_list' %}?stat=&cate={{ cate }}&sort={{ sort }}&search={{ search }}" class="{% if stat == '' %}label-status{% else %}label-text{% endif %}">全部</a>
+                                    <a href="{% url 'projects:project_list' %}?stat=即将开始&cate={{ cate }}&sort={{ sort }}&search={{ search }}" class="{% if stat == '即将开始' %}label-status{% else %}label-text{% endif %}">即将开始</a>
+                                    <a href="{% url 'projects:project_list' %}?stat=众筹中&cate={{ cate }}&sort={{ sort }}&search={{ search }}" class="{% if stat == '众筹中' %}label-status{% else %}label-text{% endif %}">众筹中</a>
+                                    <a href="{% url 'projects:project_list' %}?stat=众筹成功&cate={{ cate }}&sort={{ sort }}&search={{ search }}" class="{% if stat == '众筹成功' %}label-status{% else %}label-text{% endif %}">众筹成功</a>
+                                </li>
+                                <li>
+                                    排序：<a href="{% url 'projects:project_list' %}?sort=&stat={{ stat }}&cate={{ cate }}&search={{ search }}" class="{% if sort == '' %}label-order{% else %}label-text{% endif %}">综合排序</a>
+                                    <a href="{% url 'projects:project_list' %}?sort=time&stat={{ stat }}&cate={{ cate }}&search={{ search }}" class="{% if sort == 'time' %}label-order{% else %}label-text{% endif %}">最新上线</a>
+                                    <a href="{% url 'projects:project_list' %}?sort=funding&stat={{ stat }}&cate={{ cate }}&search={{ search }}" class="{% if sort == 'funding' %}label-order{% else %}label-text{% endif %}">金额最多</a>
+                                    <a href="{% url 'projects:project_list' %}?sort=support&stat={{ stat }}&cate={{ cate }}&search={{ search }}" class="{% if sort == 'support' %}label-order{% else %}label-text{% endif %}">支持最多</a>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="panel-footer" style="height:50px;padding:0;">
+                            <div style="float:left;padding:15px;">
+                                共216个众筹项目
+                            </div>
+                            <div style="float:right;">
+                                <form class="navbar-form navbar-left" role="search" action="{% url 'projects:project_list' %}?sort={{ sort }}&stat={{ stat }}&cate={{ cate }}">
+                                    <div class="form-group">
+                                        <input type="text" name="search" class="form-control" placeholder="{% if search == '' %}请输入搜索内容{% else %}{{ search }}{% endif %}" >
+                                    </div>
+                                    <button type="submit" class="btn btn-default"><i class="glyphicon glyphicon-search"></i> 搜索</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+{#            列表内容#}
+        <div class="container">
+            <div class="row clearfix">
+                <div class="col-md-12 column">
+                    <div class="row">
+
+                        {% for project in pages %}
+                        <div class="col-md-3">
+                            <div class="thumbnail">
+                                <a href="{% url 'projects:project_detail' project.id %}">
+                                <img alt="300x200" src="{{ MEDIA_URL }}{{ project.title_image }}" />
+                                </a>
+                                <div class="caption">
+                                    <h3 class="break">
+                            <a href="{% url 'projects:project_detail' project.id %}">{{ project.name }}</a>
+                        </h3>
+                            <p>
+                                <div style="float:left;"><i class="glyphicon glyphicon-screenshot" title="目标金额"></i> ${{ project.target_funding }} </div>
+                                <div style="float:right;"><i title="截至日期" class="glyphicon glyphicon-calendar"></i> {{ project.dead_time|date:'Y-m-d' }} </div>
+                            </p>
+                            <br>
+                            <div class="progress" style="margin-bottom: 4px;">
+                                <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width: {%  widthratio project.support_funding project.target_funding 100 %}%">
+                                    <span>{%  widthratio project.support_funding project.target_funding 100 %}% </span>
+                                </div>
+                            </div>
+                            <div><span style="float:right;"><i class="glyphicon glyphicon-star-empty" id="lovebtn" name="{{ project.id }}" ></i></span> <span><i class="glyphicon glyphicon-user" title="支持人数"></i> {{ project.support_num }}</span> </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+{#            分页#}
+        <div class="container">
+            <div class="row clearfix">
+                <div class="col-md-12 column" style="text-align:center">
+                    <ul class="pagination">
+
+                    {% if pages.has_previous %}
+                    <li><a rel="nofollow" href="?pagenum={{ pages.previous_page_number }}&cate={{ cate }}&stat={{ stat }}&sort={{ sort }}&search={{ search }}">上一页</a></li>
+                        {% else %}
+                        <li><a rel="nofollow" href="?pagenum={{ pages.number }}&cate={{ cate }}&stat={{ stat }}&sort={{ sort }}&search={{ search }}">上一页</a></li>
+                    {% endif %}
+
+                    {% for num in pages.paginator.page_range %}
+                    <li {% if num == pages.number %} class="active"{% endif %}>
+                        <a rel="nofollow" href="?pagenum={{ num }}&cate={{ cate }}&stat={{ stat }}&sort={{ sort }}&search={{ search }}">{{ num }}</a>
+                    </li>
+                    {% endfor %}
+
+                    {% if pages.has_next %}
+                    <li><a rel="nofollow" href="?pagenum={{ pages.next_page_number }}&cate={{ cate }}&stat={{ stat }}&sort={{ sort }}&search={{ search }}">下一页</a></li>
+                        {% else %}
+                        <li><a rel="nofollow" href="?pagenum={{ pages.number }}&cate={{ cate }}&stat={{ stat }}&sort={{ sort }}&search={{ search }}">下一页</a></li>
+                    {% endif %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+{% endblock %}
+
