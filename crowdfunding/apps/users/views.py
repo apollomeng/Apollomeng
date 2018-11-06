@@ -86,5 +86,7 @@ def user_logout(request):
     return redirect(reverse('index'))
 
     ggggg
+    yyyyy
+    
 
 
